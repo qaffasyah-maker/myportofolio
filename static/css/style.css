@@ -176,36 +176,6 @@ h1, .brand {
     border-top: 1px solid var(--line);
 }
 
-@media (max-width: 600px) {
-    .hero-grid {
-        grid-template-columns: 1fr;
-        grid-template-areas:
-            "identity"
-            "photo"
-            "details";
-    }
-
-    .hero-photo {
-        max-width: 220px;
-    }
-
-    .social-links {
-        justify-content: flex-start;
-    }
-
-    .portfolio-grid {
-        grid-template-columns: 1fr;
-        gap: 3rem;
-    }
-
-    .portfolio-column,
-    .portfolio-column:first-child,
-    .portfolio-column:last-child {
-        padding: 0;
-        border-right: none;
-    }
-}
-
 .portfolio-section {
     padding: 4rem 0 5rem;
     border-top: 1px solid var(--line);
@@ -275,4 +245,34 @@ h1, .brand {
 
 .portfolio-item {
     transition: transform 0.2s ease;
+}
+
+@media (max-width: 600px) {
+    .hero-grid {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "identity"
+            "photo"
+            "details";
+    }
+
+    .hero-photo {
+        max-width: 220px;
+    }
+
+    .social-links {
+        justify-content: flex-start;
+    }
+
+    .portfolio-grid {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+
+    .portfolio-column,
+    .portfolio-column:first-child,
+    .portfolio-column:last-child {
+        padding: 0;
+        border-right: none;
+    }
 }
