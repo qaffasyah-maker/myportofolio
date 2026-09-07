@@ -192,4 +192,79 @@ h1, .brand {
     .social-links {
         justify-content: flex-start;
     }
+
+    .portfolio-grid {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+
+    .portfolio-column,
+    .portfolio-column:first-child,
+    .portfolio-column:last-child {
+        padding: 0;
+        border-right: none;
+    }
+}
+
+.portfolio-section {
+    padding: 4rem 0 5rem;
+    border-top: 1px solid var(--line);
+}
+
+.portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+}
+
+.portfolio-column {
+    padding: 0 2rem;
+    border-right: 1px solid var(--line);
+}
+
+.portfolio-column:first-child {
+    padding-left: 0;
+}
+
+.portfolio-column:last-child {
+    border-right: none;
+    padding-right: 0;
+}
+
+.portfolio-column h2 {
+    font-family: "Space Grotesk", -apple-system, sans-serif;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+}
+
+.portfolio-item {
+    padding: 1.25rem 0;
+    border-top: 1px solid var(--line);
+}
+
+.portfolio-item:hover {
+    transform: translateX(6px);
+}
+
+.portfolio-item h3 {
+    font-family: "Space Grotesk", -apple-system, sans-serif;
+    font-size: 1.05rem;
+    margin-bottom: 0.25rem;
+}
+
+.portfolio-item p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 0.2rem;
+}
+
+.portfolio-item span {
+    color: var(--accent-dark);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.portfolio-item {
+    transition: transform 0.2s ease;
 }
