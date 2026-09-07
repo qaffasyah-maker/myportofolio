@@ -253,6 +253,14 @@ h1, .brand {
     margin-bottom: 0.25rem;
 }
 
+.portfolio-item a {
+    color: var(--ink);
+}
+
+.portfolio-item a:hover {
+    color: var(--accent-dark);
+}
+
 .portfolio-item p {
     color: var(--text-muted);
     font-size: 0.9rem;
