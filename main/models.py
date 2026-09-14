@@ -18,9 +18,36 @@ class Experience(models.Model):
     thumbnail = models.URLField(blank=True, null=True)
     started_at = models.DateTimeField(auto_now_add=True)
     ended_at = models.DateTimeField(blank=True, null=True)
+
     def __str__(self):
         return self.title
     
     @property
     def is_ongoing(self):
         return self.ended_at is None
+
+
+class Education(models.Model):
+    school = models.CharField(max_length=255)
+    level = models.CharField(max_length=100)
+    year = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.school
+
+class Organization(models.Model):
+    name = models.CharField(max_length=255)
+    position = models.CharField(max_length=255)
+    year = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+class Certificate(models.Model):
+    name = models.CharField(max_length=255)
+    issuer = models.CharField(max_length=255)
+    year = models.CharField(max_length=50)
+    file = models.URLField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name

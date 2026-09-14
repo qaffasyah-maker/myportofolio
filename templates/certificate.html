@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ name }} - Certificates</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <a href="{% url 'main:show_main' %}" class="brand">{{ name }}</a>
+            <nav>
+                <a href="{% url 'main:show_main' %}">Profile</a>
+                <a href="{% url 'main:show_education' %}">Education</a>
+                <a href="{% url 'main:show_organization' %}">Organization</a>
+                <a href="{% url 'main:show_certificate' %}">Certificate</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="experience-section" id="certificate">
+            <div class="container">
+                <p class="section-kicker">Sertifikat yang saya peroleh</p>
+                <h1>Certificates</h1>
+
+                <div class="experience-grid">
+                    {% for certificate in certificate_list %}
+                        <article class="experience-card">
+                            <span class="experience-category">
+                                {{ certificate.issuer }}
+                            </span>
+
+                            <h2>
+                                {% if certificate.file %}
+                                    <a href="{{ certificate.file }}" target="_blank">
+                                        {{ certificate.name }}
+                                    </a>
+                                {% else %}
+                                    {{ certificate.name }}
+                                {% endif %}
+                            </h2>
+
+                            <p class="experience-description">
+                                {{ certificate.year }}
+                            </p>
+                        </article>
+                    {% empty %}
+                        <p class="empty-state">
+                            Belum ada sertifikat yang ditambahkan.
+                        </p>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; 2026 {{ name }}. Fakultas Ilmu Komputer, Universitas Indonesia.</p>
+        </div>
+    </footer>
+</body>
+</html>
