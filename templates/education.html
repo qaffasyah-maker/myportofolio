@@ -1,45 +1,59 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ name }} - Education</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/style.css">
-</head>
-<body>
-    <header class="site-header">
-        <div class="container">
-            <a href="{% url 'main:show_main' %}" class="brand">{{ name }}</a>
-            <nav>
-                <a href="{% url 'main:show_main' %}">Profile</a>
-                <a href="{% url 'main:show_education' %}">Education</a>
-                <a href="{% url 'main:show_organization' %}">Organization</a>
-                <a href="{% url 'main:show_certificate' %}">Certificate</a>
-            </nav>
-        </div>
-    </header>
+{% extends "base.html" %}
+{% block meta %}
+    <title>Education - {{ name }}</title>
+{% endblock meta %}
 
+{% block content %}
     <main>
         <section class="experience-section" id="education">
             <div class="container">
                 <p class="section-kicker">Perjalanan pendidikan saya</p>
-                <h1>Education</h1>
 
-                <div class="experience-grid">
+                <div class="project-header">
+                    <h1>Education</h1>
+                    <a href="{% url 'main:create_education' %}"
+                       class="button project-add-button">
+                        <span aria-hidden="true">+</span>
+                        Tambah Pendidikan
+                    </a>
+                </div>
+
+                <div class="experience-grid project-grid">
                     {% for education in education_list %}
                         <article class="experience-card">
+
+                            {% if education.image_url %}
+                                <img src="{{ education.image_url }}"
+                                     alt="Foto {{ education.school }}"
+                                     class="project-image">
+                            {% endif %}
+
+                            <h2>{{ education.school }}</h2>
+
                             <span class="experience-category">
                                 {{ education.level }}
                             </span>
 
-                            <h2>{{ education.school }}</h2>
-
                             <p class="experience-description">
                                 {{ education.year }}
                             </p>
+
+                            <div class="project-card-actions">
+                                <div class="project-actions">
+
+                                    {% if education.gmaps_url %}
+                                        <a href="{{ education.gmaps_url }}"
+                                           class="button"
+                                           target="_blank">
+                                            Lihat GMaps
+                                        </a>
+                                    {% endif %}
+
+                                    {% include "components/education_delete_modal.html" with education=education %}
+
+                                </div>
+                            </div>
+
                         </article>
                     {% empty %}
                         <p class="empty-state">
@@ -50,11 +64,4 @@
             </div>
         </section>
     </main>
-
-    <footer class="site-footer">
-        <div class="container">
-            <p>&copy; 2026 {{ name }}. Fakultas Ilmu Komputer, Universitas Indonesia.</p>
-        </div>
-    </footer>
-</body>
-</html>
+{% endblock content %}

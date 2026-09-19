@@ -4,7 +4,7 @@ from django.core import serializers
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from main.models import *
-from main.forms import ProjectForm
+from main.forms import *
 
 
 
@@ -28,12 +28,46 @@ def show_experience(request):
     }
     return render(request, "experience.html", context)
 
+def create_education(request):
+    form = EducationForm(request.POST or None)
+
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, "daftar Sekolah berhasil ditambahkan!")
+        return redirect("main:show_education")
+
+    context = {
+        "name": "Qisthan",
+        "form": form,
+    }
+    return render(request, "projects_form.html", context)
+
 def show_education(request):
     context = {
         "name": "Qisthan",
         "education_list": Education.objects.all(),
     }
     return render(request, "education.html", context)
+
+def get_education_json(request):
+    title_query = request.GET.get("title", "").strip()
+    education = Education.objects.all()
+
+    if title_query:
+        education = education.filter(title__icontains=title_query)
+
+    education_json = serializers.serialize("json", education)
+    return HttpResponse(education_json, content_type="application/json")
+
+def delete_education(request, education_id):
+    education = get_object_or_404(Education, pk=education_id)
+
+    if request.method == "POST":
+        education.delete()
+        messages.success(request, "Daftar Sekolah berhasil dihapus!")
+        return redirect("main:show_education")
+
+    return redirect("main:show_education")
 
 def show_organization(request):
     context = {
@@ -74,7 +108,7 @@ def show_projects(request):
     title_query = request.GET.get("title", "").strip()
 
     context = {
-        "name": "Burhan",
+        "name": "Qisthan",
         "project_list": projects,
         "title_query": title_query,
     }
