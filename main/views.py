@@ -40,7 +40,7 @@ def create_education(request):
         "name": "Qisthan",
         "form": form,
     }
-    return render(request, "projects_form.html", context)
+    return render(request, "education_form.html", context)
 
 def show_education(request):
     context = {
