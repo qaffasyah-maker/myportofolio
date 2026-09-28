@@ -57,4 +57,13 @@
             </div>
         </section>
     </main>
+    {% if user.is_superuser %} 
+    <a href="{% url 'main:create_project' %}"
+       class="button project-add-button">
+        <span aria-hidden="true">+</span>
+        Tambah Proyek
+    </a>
+    {% extends "project_star.html" %}
+    {% include "components/project_delete_modal.html" with project=project %}
+{% endif %}    
 {% endblock content %}
