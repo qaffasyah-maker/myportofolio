@@ -12,7 +12,8 @@ from django.core.exceptions import PermissionDenied
 from main.models import *
 from main.forms import *
 
-
+def is_editor(user):
+    return user.groups.filter(name="Editor").exists()
 
 def show_main(request):
     last_login = request.COOKIES.get('last_login', 'belum ada sesi login')
@@ -93,6 +94,9 @@ def show_certificate(request):
 
 @login_required(login_url="/login/")
 def create_project(request):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
     form = ProjectForm(request.POST or None)
 
     if request.method == "POST" and form.is_valid():
@@ -101,9 +105,29 @@ def create_project(request):
         return redirect("main:show_projects")
 
     context = {
-        "name": "Burhan",
+        "name": "Qisthan",
         "form": form,
     }
+    return render(request, "projects_form.html", context)
+
+@login_required(login_url="/login/")
+def update_project(request, project_id):
+    if not request.user.is_superuser and not is_editor(request.user):
+        raise PermissionDenied
+
+    project = get_object_or_404(Project, pk=project_id)
+    form = ProjectForm(request.POST or None, instance=project)
+
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, "Project berhasil diperbarui!")
+        return redirect("main:show_projects")
+
+    context = {
+        "name": "Qisthan",
+        "form": form,
+    }
+
     return render(request, "projects_form.html", context)
 
 def show_projects(request):
@@ -114,13 +138,21 @@ def show_projects(request):
         json_response.content.decode("utf-8"),
     )
     projects = [project.object for project in projects]
+
     title_query = request.GET.get("title", "").strip()
+
+    is_editor_user = False
+
+    if request.user.is_authenticated:
+        is_editor_user = is_editor(request.user)
 
     context = {
         "name": "Qisthan",
         "project_list": projects,
         "title_query": title_query,
+        "is_editor": is_editor_user,
     }
+
     return render(request, "project.html", context)
 
 def get_projects_json(request):
@@ -136,6 +168,9 @@ def get_projects_json(request):
 
 @login_required(login_url="/login/")
 def delete_project(request, project_id):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
     project = get_object_or_404(Project, pk=project_id)
 
     if request.method == "POST":
