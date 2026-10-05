@@ -20,3 +20,10 @@ Saya menggunakan AI pada beberapa bagian di Tugas 2, terutama untuk membantu mem
 
 ## TUGAS 4
 Saya menggunakan AI ChatGPT pada beberapa bagian di Tugas 4 untuk membantu saya memahami penerapan authentication dan authorization pada Django. AI membantu saya dalam memahami penggunaan login, logout, Django Group, role Editor, permission, serta pengaturan hak akses pada fitur Project. Karena saya masih belajar mengenai sistem authentication dan authorization di Django, saya menggunakan ChatGPT sebagai bantuan untuk memahami alur dan memperbaiki kode yang mengalami kendala. Setelah itu, saya menyesuaikan kode tersebut dengan kebutuhan tugas dan melakukan pengecekan pada setiap role untuk memastikan fitur berjalan sesuai ketentuan.
+
+### TUGAS 5
+1. Debouncing merupakan teknik untuk menunggu user selesai mengetik sebelum mengirim request ke server. Teknik ini berguna agar request AJAX tidak terlalu banyak dan pencarian menjadi lebih efisien.
+2. await digunakan untuk menunggu proses fetch() selesai sebelum lanjut ke kode berikutnya. Jika tidak memakai await, hasil fetch() masih berupa Promise sehingga data belum bisa langsung digunakan.
+3. XSS (Cross-Site Scripting) adalah serangan yang memanfaatkan script berbahaya yang dimasukkan ke dalam website. Pada AJAX, kita perlu lebih hati-hati karena data dimasukkan ke halaman menggunakan JavaScript. Jika menggunakan innerHTML secara langsung, script tersebut bisa ikut dijalankan. Oleh karena itu, kita bisa menggunakan textContent dan melakukan validasi data di server.
+
+Saya menggunakan AI ChatGPT pada beberapa bagian di Tugas 5 untuk membantu saya memahami penerapan AJAX dan JavaScript pada Django. AI membantu saya dalam memahami penggunaan fetch(), JSON, debouncing, modal, toast, serta validasi dan pencegahan XSS. Karena saya masih belajar mengenai penggunaan AJAX dalam Django, saya menggunakan ChatGPT sebagai bantuan untuk memahami alur dan memperbaiki kode yang mengalami kendala. Setelah itu, saya menyesuaikan kembali kode tersebut dengan kebutuhan tugas dan melakukan pengecekan pada setiap fitur untuk memastikan semuanya berjalan sesuai ketentuan.
