@@ -68,51 +68,67 @@ class EducationForm(ModelForm):
     class Meta:
         model = Education
         fields = [
-                "school",
-                "level",
-                "year",
-                "image_url",
-                "gmaps_url",
+            "school",
+            "level",
+            "year",
+            "image_url",
+            "gmaps_url",
         ]
-        
+
         labels = {
-                "school": "Nama Sekolah",
-                "level": "Jenjang sekolah",
-                "year": "Tahun berserkolah",
-                "image_url": "URL Foto Sekolah",
-                "gmaps_url": "URL GMaps Sekolah",
+            "school": "Nama Sekolah",
+            "level": "Jenjang sekolah",
+            "year": "Tahun berserkolah",
+            "image_url": "URL Foto Sekolah",
+            "gmaps_url": "URL GMaps Sekolah",
         }
-        
+
         widgets = {
-                    "school": TextInput(
-                        attrs={
-                            "placeholder": "Tuliskan nama Sekolah",
-                            "maxlength": 255,
-                        }
-                    ),
-                    "level": TextInput(
-                        attrs={
-                            "placeholder": "Jenjang kamu bersekolah",
-                            "maxlength": 100,
-                        }
-                    ),
-                    "year": TextInput(
-                        attrs={
-                            "placeholder": "Tahun kamu berserkolah",
-                            "maxlength": 50,
-                        }
-                    ),
-                    "image_url": URLInput(
-                        attrs={
-                            "placeholder": "Link Foto Sekolah",
-                        }
-                    ),
-                    "gmaps_url": URLInput(
-                        attrs={
-                            "placeholder": "Link GMaps",
-                        }
-                    ),
+            "school": TextInput(
+                attrs={
+                    "placeholder": "Tuliskan nama Sekolah",
+                    "maxlength": 255,
+                }
+            ),
+            "level": TextInput(
+                attrs={
+                    "placeholder": "Jenjang kamu bersekolah",
+                    "maxlength": 100,
+                }
+            ),
+            "year": TextInput(
+                attrs={
+                    "placeholder": "Tahun kamu berserkolah",
+                    "maxlength": 50,
+                }
+            ),
+            "image_url": URLInput(
+                attrs={
+                    "placeholder": "Link Foto Sekolah",
+                }
+            ),
+            "gmaps_url": URLInput(
+                attrs={
+                    "placeholder": "Link GMaps",
+                }
+            ),
         }
+
+    def clean_school(self):
+        school = strip_tags(self.cleaned_data["school"]).strip()
+
+        if not school:
+            raise ValidationError(
+                "Nama sekolah tidak boleh hanya berisi tag HTML."
+            )
+
+        return school
+
+    def clean_level(self):
+        return strip_tags(self.cleaned_data["level"]).strip()
+
+    def clean_year(self):
+        return strip_tags(self.cleaned_data["year"]).strip()
 
 # class OrganizationForm(ModelForm):
 #     class Meta:

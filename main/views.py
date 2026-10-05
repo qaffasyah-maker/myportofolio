@@ -61,14 +61,69 @@ def show_education(request):
     return render(request, "education.html", context)
 
 def get_education_json(request):
-    title_query = request.GET.get("title", "").strip()
-    education = Education.objects.all()
+    school_query = request.GET.get("school", "").strip()
+    education_list = Education.objects.prefetch_related("starred_by").all()
 
-    if title_query:
-        education = education.filter(title__icontains=title_query)
+    if school_query:
+        education_list = education_list.filter(
+            school__icontains=school_query
+        )
 
-    education_json = serializers.serialize("json", education)
-    return HttpResponse(education_json, content_type="application/json")
+    data = []
+
+    for education in education_list:
+        starred_users = education.starred_by.all()
+
+        is_starred = (
+            request.user in starred_users
+            if request.user.is_authenticated
+            else False
+        )
+
+        data.append({
+            "pk": str(education.id),
+            "fields": {
+                "school": education.school,
+                "level": education.level,
+                "year": education.year,
+                "image_url": education.image_url,
+                "gmaps_url": education.gmaps_url,
+                "star_count": starred_users.count(),
+                "is_starred": is_starred,
+            }
+        })
+
+    return JsonResponse(data, safe=False)
+
+@require_POST
+def create_education_ajax(request):
+    if not request.user.is_authenticated or not request.user.is_superuser:
+        return JsonResponse(
+            {
+                "message": "Hanya pemilik portofolio yang dapat menambahkan pendidikan."
+            },
+            status=403,
+        )
+
+    form = EducationForm(request.POST)
+
+    if form.is_valid():
+        education = form.save()
+
+        return JsonResponse(
+            {
+                "message": "Pendidikan berhasil ditambahkan.",
+                "pk": str(education.id),
+            },
+            status=201,
+        )
+
+    return JsonResponse(
+        {
+            "errors": form.errors.get_json_data(),
+        },
+        status=400,
+    )
 
 def delete_education(request, education_id):
     education = get_object_or_404(Education, pk=education_id)

@@ -35,6 +35,11 @@ class Education(models.Model):
     year = models.CharField(max_length=50)
     image_url = models.URLField(blank=True, null=True)
     gmaps_url = models.URLField(blank=True)
+    starred_by = models.ManyToManyField(
+        User,
+        related_name="starred_educations",
+        blank=True
+    )
 
     def __str__(self):
         return self.school

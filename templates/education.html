@@ -1,67 +1,509 @@
 {% extends "base.html" %}
+
 {% block meta %}
     <title>Education - {{ name }}</title>
 {% endblock meta %}
 
 {% block content %}
-    <main>
-        <section class="experience-section" id="education">
-            <div class="container">
-                <p class="section-kicker">Perjalanan pendidikan saya</p>
 
-                <div class="project-header">
-                    <h1>Education</h1>
-                    <a href="{% url 'main:create_education' %}"
-                       class="button project-add-button">
+<main>
+    <section class="experience-section" id="education">
+        <div class="container">
+
+            <p class="section-kicker">Perjalanan pendidikan saya</p>
+
+            <div class="project-header">
+                <h1>Education</h1>
+
+                {% if user.is_superuser %}
+                    <button
+                        type="button"
+                        class="button project-add-button"
+                        id="open-education-modal"
+                    >
                         <span aria-hidden="true">+</span>
                         Tambah Pendidikan
-                    </a>
-                </div>
-
-                <div class="experience-grid project-grid">
-                    {% for education in education_list %}
-                        <article class="experience-card">
-
-                            {% if education.image_url %}
-                                <img src="{{ education.image_url }}"
-                                     alt="Foto {{ education.school }}"
-                                     class="project-image">
-                            {% endif %}
-
-                            <h2>{{ education.school }}</h2>
-
-                            <span class="experience-category">
-                                {{ education.level }}
-                            </span>
-
-                            <p class="experience-description">
-                                {{ education.year }}
-                            </p>
-
-                            <div class="project-card-actions">
-                                <div class="project-actions">
-
-                                    {% if education.gmaps_url %}
-                                        <a href="{{ education.gmaps_url }}"
-                                           class="button"
-                                           target="_blank">
-                                            Lihat GMaps
-                                        </a>
-                                    {% endif %}
-
-                                    {% include "components/education_delete_modal.html" with education=education %}
-
-                                </div>
-                            </div>
-
-                        </article>
-                    {% empty %}
-                        <p class="empty-state">
-                            Belum ada pendidikan yang ditambahkan.
-                        </p>
-                    {% endfor %}
-                </div>
+                    </button>
+                {% endif %}
             </div>
-        </section>
-    </main>
+
+
+            <div class="search-container">
+                <input
+                    type="text"
+                    id="education-search"
+                    placeholder="Cari sekolah..."
+                >
+            </div>
+
+
+            <div
+                id="education-list"
+                class="experience-grid project-grid"
+            >
+                <p class="loading-state">
+                    Memuat data pendidikan...
+                </p>
+            </div>
+
+        </div>
+    </section>
+</main>
+
+
+{% if user.is_superuser %}
+
+<div id="education-modal" class="modal" hidden>
+
+    <div class="modal-content">
+
+        <button
+            type="button"
+            id="close-education-modal"
+            class="modal-close"
+        >
+            &times;
+        </button>
+
+        <h2>Tambah Pendidikan</h2>
+
+
+        <form id="education-form">
+
+            {% csrf_token %}
+
+
+            <label for="school">
+                Nama Sekolah
+            </label>
+
+            <input
+                type="text"
+                id="school"
+                name="school"
+                placeholder="Tuliskan nama Sekolah"
+                maxlength="255"
+                required
+            >
+
+
+            <label for="level">
+                Jenjang Sekolah
+            </label>
+
+            <input
+                type="text"
+                id="level"
+                name="level"
+                placeholder="Jenjang kamu bersekolah"
+                maxlength="100"
+                required
+            >
+
+
+            <label for="year">
+                Tahun Bersekolah
+            </label>
+
+            <input
+                type="text"
+                id="year"
+                name="year"
+                placeholder="Tahun kamu bersekolah"
+                maxlength="50"
+                required
+            >
+
+
+            <label for="image_url">
+                URL Foto Sekolah
+            </label>
+
+            <input
+                type="url"
+                id="image_url"
+                name="image_url"
+                placeholder="Link Foto Sekolah"
+            >
+
+
+            <label for="gmaps_url">
+                URL GMaps Sekolah
+            </label>
+
+            <input
+                type="url"
+                id="gmaps_url"
+                name="gmaps_url"
+                placeholder="Link GMaps"
+            >
+
+
+            <button
+                type="submit"
+                class="button"
+            >
+                Simpan Pendidikan
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endif %}
+
+
+<script>
+
+    async function loadEducation(search = "") {
+
+        const educationList =
+            document.getElementById("education-list");
+
+
+        educationList.innerHTML = `
+            <p class="loading-state">
+                Memuat data pendidikan...
+            </p>
+        `;
+
+
+        try {
+
+            const response = await fetch(
+                `{% url 'main:get_education_json' %}?school=${encodeURIComponent(search)}`
+            );
+
+
+            if (!response.ok) {
+                throw new Error(
+                    "Gagal mengambil data pendidikan."
+                );
+            }
+
+
+            const data = await response.json();
+
+
+            if (data.length === 0) {
+
+                educationList.innerHTML = `
+                    <p class="empty-state">
+                        Belum ada pendidikan yang ditambahkan.
+                    </p>
+                `;
+
+                return;
+            }
+
+
+            educationList.innerHTML = "";
+
+
+            data.forEach((education) => {
+
+                const fields = education.fields;
+
+
+                const card =
+                    document.createElement("article");
+
+                card.className =
+                    "experience-card";
+
+
+                /*
+                 * Gunakan DOM API dan textContent.
+                 * Jangan memasukkan data server langsung
+                 * ke dalam innerHTML agar lebih aman dari XSS.
+                 */
+
+                if (fields.image_url) {
+
+                    const image =
+                        document.createElement("img");
+
+                    image.src = fields.image_url;
+
+                    image.alt =
+                        "Foto " + fields.school;
+
+                    image.className =
+                        "project-image";
+
+                    card.appendChild(image);
+
+                }
+
+
+                const school =
+                    document.createElement("h2");
+
+                school.textContent =
+                    fields.school;
+
+                card.appendChild(school);
+
+
+                const level =
+                    document.createElement("span");
+
+                level.className =
+                    "experience-category";
+
+                level.textContent =
+                    fields.level;
+
+                card.appendChild(level);
+
+
+                const year =
+                    document.createElement("p");
+
+                year.className =
+                    "experience-description";
+
+                year.textContent =
+                    fields.year;
+
+                card.appendChild(year);
+
+
+                const star =
+                    document.createElement("p");
+
+                star.className =
+                    "experience-description";
+
+                star.textContent =
+                    "⭐ " + fields.star_count + " Star";
+
+                card.appendChild(star);
+
+
+                educationList.appendChild(card);
+
+            });
+
+
+        } catch (error) {
+
+            educationList.innerHTML = `
+                <p class="empty-state">
+                    Gagal memuat data pendidikan.
+                </p>
+            `;
+
+        }
+
+    }
+
+
+
+    /*
+     * Search dengan debounce 500 ms
+     */
+
+    const searchInput =
+        document.getElementById("education-search");
+
+
+    let searchTimeout;
+
+
+    searchInput.addEventListener(
+        "input",
+        function () {
+
+            clearTimeout(searchTimeout);
+
+
+            searchTimeout = setTimeout(
+                function () {
+
+                    loadEducation(
+                        searchInput.value
+                    );
+
+                },
+                500
+            );
+
+        }
+    );
+
+
+    loadEducation();
+
+
+
+    /*
+     * Modal
+     */
+
+    const educationModal =
+        document.getElementById("education-modal");
+
+
+    const openEducationModal =
+        document.getElementById("open-education-modal");
+
+
+    const closeEducationModal =
+        document.getElementById("close-education-modal");
+
+
+    if (openEducationModal) {
+
+        openEducationModal.addEventListener(
+            "click",
+            function () {
+
+                educationModal.hidden = false;
+
+            }
+        );
+
+    }
+
+
+    if (closeEducationModal) {
+
+        closeEducationModal.addEventListener(
+            "click",
+            function () {
+
+                educationModal.hidden = true;
+
+            }
+        );
+
+    }
+
+
+    if (educationModal) {
+
+        educationModal.addEventListener(
+            "click",
+            function (event) {
+
+                if (event.target === educationModal) {
+
+                    educationModal.hidden = true;
+
+                }
+
+            }
+        );
+
+    }
+
+
+
+    /*
+     * AJAX tambah Education
+     */
+
+    const educationForm =
+        document.getElementById("education-form");
+
+
+    if (educationForm) {
+
+        educationForm.addEventListener(
+            "submit",
+            async function (event) {
+
+                event.preventDefault();
+
+
+                const formData =
+                    new FormData(educationForm);
+
+
+                try {
+
+                    const response = await fetch(
+                        "{% url 'main:create_education_ajax' %}",
+                        {
+                            method: "POST",
+                            body: formData
+                        }
+                    );
+
+
+                    const data =
+                        await response.json();
+
+
+                    if (response.status === 201) {
+
+                        educationForm.reset();
+
+                        educationModal.hidden = true;
+
+                        loadEducation();
+
+
+                        showToast(
+                            "Berhasil",
+                            data.message,
+                            "success"
+                        );
+
+                    }
+
+
+                    else if (response.status === 400) {
+
+                        showToast(
+                            "Gagal",
+                            "Data yang dimasukkan tidak valid.",
+                            "error"
+                        );
+
+                    }
+
+
+                    else if (response.status === 403) {
+
+                        showToast(
+                            "Tidak Diizinkan",
+                            data.message,
+                            "error"
+                        );
+
+                    }
+
+
+                    else {
+
+                        showToast(
+                            "Gagal",
+                            "Terjadi kesalahan.",
+                            "error"
+                        );
+
+                    }
+
+
+                } catch (error) {
+
+                    showToast(
+                        "Gagal",
+                        "Gagal mengirim data.",
+                        "error"
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+</script>
+
 {% endblock content %}
